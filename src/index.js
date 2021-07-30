@@ -10,8 +10,12 @@ function Square(props) {
     );
 }
 
-function toArrayNumber(coords) {
+function toArrayIndex(coords) {
     return coords.row * 3 + coords.col;
+}
+
+function toCoords(index) {
+    return new Coords(Math.trunc(index / 3), index % 3);
 }
 
 class Coords {
@@ -21,12 +25,16 @@ class Coords {
     }
 }
 
+Coords.prototype.toString = function coordsToString() {
+    return '(' + this.row + ', ' + this.col + ')';
+}
+
 class Board extends React.Component {
     renderSquare(coords) {
         return (
             <Square
-                value={this.props.squares[toArrayNumber(coords)]}
-                onClick={() => this.props.onClick(toArrayNumber(coords))}
+                value={this.props.squaresMap[coords]}
+                onClick={() => this.props.onClick(toArrayIndex(coords))}
             />
         );
     }
@@ -131,6 +139,10 @@ class Game extends React.Component {
                 <div className="game-board">
                     <Board
                         squares={current.squares}
+                        squaresMap={current.squares.reduce(function(map, obj, i) {
+                            map[toCoords(i)] = obj;
+                            return map;
+                        }, {})}
                         onClick={i => this.handleClick(i)}
                     />
                 </div>
