@@ -33,7 +33,7 @@ class Board extends React.Component {
     renderSquare(coords) {
         return (
             <Square
-                value={this.props.squaresMap[coords]}
+                value={this.props.squaresMap.get(coords.toString())}
                 onClick={() => this.props.onClick(toArrayIndex(coords))}
             />
         );
@@ -44,24 +44,24 @@ class Board extends React.Component {
             <div>
                 <div className="board-row">
                     <h3 className="square">#</h3>
+                    <h3 className="square">0</h3>
                     <h3 className="square">1</h3>
                     <h3 className="square">2</h3>
-                    <h3 className="square">3</h3>
                 </div>
                 <div className="board-row">
-                    <h3 className="square">1</h3>
+                    <h3 className="square">0</h3>
                     {this.renderSquare(new Coords(0, 0))}
                     {this.renderSquare(new Coords(0, 1))}
                     {this.renderSquare(new Coords(0, 2))}
                 </div>
                 <div className="board-row">
-                    <h3 className="square">2</h3>
+                    <h3 className="square">1</h3>
                     {this.renderSquare(new Coords(1, 0))}
                     {this.renderSquare(new Coords(1, 1))}
                     {this.renderSquare(new Coords(1, 2))}
                 </div>
                 <div className="board-row">
-                    <h3 className="square">3</h3>
+                    <h3 className="square">2</h3>
                     {this.renderSquare(new Coords(2, 0))}
                     {this.renderSquare(new Coords(2, 1))}
                     {this.renderSquare(new Coords(2, 2))}
@@ -76,9 +76,7 @@ class Game extends React.Component {
         super(props);
         this.state = {
             history: [
-                {
-                    squares: Array(9).fill(null)
-                }
+                new Map()
             ],
             stepNumber: 0,
             xIsNext: true
@@ -88,22 +86,15 @@ class Game extends React.Component {
     handleClick(i) {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
-        const squares = current.squares.slice();
-        const squaresMap = current.squares.reduce(function (map, obj, i) {
-            map[toCoords(i)] = obj;
-            return map;
-        }, {});
-        if (calculateWinner(squaresMap) || squaresMap[toCoords(i)]) {
+        const squaresMap = new Map(current);
+        if (calculateWinner(squaresMap) || squaresMap.get(toCoords(i).toString()) != null) {
             return;
         }
-        squares[i] = this.state.xIsNext ? "X" : "O";
+        squaresMap.set(toCoords(i).toString(), this.state.xIsNext ? "X" : "O");
+        history.push(squaresMap);
         this.setState({
-            history: history.concat([
-                {
-                    squares: squares
-                }
-            ]),
-            stepNumber: history.length,
+            history: history,
+            stepNumber: history.length - 1,
             xIsNext: !this.state.xIsNext
         });
     }
@@ -118,15 +109,12 @@ class Game extends React.Component {
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
-        const squaresMap = current.squares.reduce(function (map, obj, i) {
-            map[toCoords(i)] = obj;
-            return map;
-        }, {});
+        const squaresMap = new Map(current);
         const winner = calculateWinner(squaresMap);
 
         const moves = history.map((step, move) => {
             const desc = move ?
-                'Go to move #' + move + ' (' + ')' :
+                'Go to move #' + move + ' ' + Array.from(step.keys()).pop() :
                 'Go to game start';
             return (
                 <li key={move}>
@@ -176,10 +164,10 @@ function calculateWinner(squaresMap) {
     ];
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
-        if (squaresMap[a] &&
-            squaresMap[a] === squaresMap[b] &&
-            squaresMap[a] === squaresMap[c]) {
-            return squaresMap[a];
+        if (squaresMap.get(a.toString()) &&
+            squaresMap.get(a.toString()) === squaresMap.get(b.toString()) &&
+            squaresMap.get(a.toString()) === squaresMap.get(c.toString())) {
+            return squaresMap.get(a.toString());
         }
     }
     return null;
