@@ -10,12 +10,23 @@ function Square(props) {
     );
 }
 
+function toArrayNumber(coords) {
+    return coords.row * 3 + coords.col;
+}
+
+class Coords {
+    constructor(row, col) {
+        this.row = row;
+        this.col = col;
+    }
+}
+
 class Board extends React.Component {
-    renderSquare(i) {
+    renderSquare(coords) {
         return (
             <Square
-                value={this.props.squares[i]}
-                onClick={() => this.props.onClick(i)}
+                value={this.props.squares[toArrayNumber(coords)]}
+                onClick={() => this.props.onClick(toArrayNumber(coords))}
             />
         );
     }
@@ -31,21 +42,21 @@ class Board extends React.Component {
                 </div>
                 <div className="board-row">
                     <h3 className="square">1</h3>
-                    {this.renderSquare(0)}
-                    {this.renderSquare(1)}
-                    {this.renderSquare(2)}
+                    {this.renderSquare(new Coords(0, 0))}
+                    {this.renderSquare(new Coords(0, 1))}
+                    {this.renderSquare(new Coords(0, 2))}
                 </div>
                 <div className="board-row">
                     <h3 className="square">2</h3>
-                    {this.renderSquare(3)}
-                    {this.renderSquare(4)}
-                    {this.renderSquare(5)}
+                    {this.renderSquare(new Coords(1, 0))}
+                    {this.renderSquare(new Coords(1, 1))}
+                    {this.renderSquare(new Coords(1, 2))}
                 </div>
                 <div className="board-row">
                     <h3 className="square">3</h3>
-                    {this.renderSquare(6)}
-                    {this.renderSquare(7)}
-                    {this.renderSquare(8)}
+                    {this.renderSquare(new Coords(2, 0))}
+                    {this.renderSquare(new Coords(2, 1))}
+                    {this.renderSquare(new Coords(2, 2))}
                 </div>
             </div>
         );
