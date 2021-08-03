@@ -42,7 +42,7 @@ class Board extends React.Component {
     render() {
         let buffer = [];
 
-        buffer.push(<div className="board-row">
+        buffer.push(<div className="board-row" key="-1">
             <h3 className="square">#</h3>
             <h3 className="square">0</h3>
             <h3 className="square">1</h3>
@@ -50,7 +50,7 @@ class Board extends React.Component {
         </div>);
 
         for (let i = 0; i < 3; i++) {
-            buffer.push(<div className="board-row">
+            buffer.push(<div className="board-row" key={i}>
                 <h3 className="square">{i}</h3>
                 {this.renderSquare(new Coords(i, 0))}
                 {this.renderSquare(new Coords(i, 1))}
@@ -76,7 +76,8 @@ class Game extends React.Component {
                 new Map()
             ],
             stepNumber: 0,
-            xIsNext: true
+            xIsNext: true,
+            sortingAsc: true,
         };
     }
 
@@ -112,7 +113,7 @@ class Game extends React.Component {
         const moves = history.map((step, move) => {
             const desc = move ?
                 'Go to move #' + move + ' ' + Array.from(step.keys()).pop() :
-                'Go to game start';
+                'Go to start';
             if (move === this.state.stepNumber) {
                 return (
                     <li key={move}>
@@ -127,6 +128,10 @@ class Game extends React.Component {
                 );
             }
         });
+
+        if (this.state.sortingAsc) {
+            moves.reverse();
+        }
 
         let status;
         if (winner) {
@@ -145,7 +150,12 @@ class Game extends React.Component {
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
-                    <ol>{moves}</ol>
+                    <div className="order-switcher">
+                        <button onClick={() => this.setState({
+                            sortingAsc: !this.state.sortingAsc,
+                        })}>{this.state.sortingAsc ? '↑' : '↓'}</button>
+                    </div>
+                    <ol reversed={this.state.sortingAsc}>{moves}</ol>
                 </div>
             </div>
         );

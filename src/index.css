@@ -3,8 +3,13 @@ body {
     margin: 20px;
 }
 
-ol, ul {
+ul {
     padding-left: 30px;
+}
+
+ol {
+    padding: 0;
+    margin: 0 0 0 20px;
 }
 
 .board-row:after {
@@ -55,4 +60,8 @@ h3.square {
 
 .selected {
     border: 1px solid red;
+}
+
+.order-switcher {
+    margin: 3px 0;
 }
