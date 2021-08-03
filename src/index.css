@@ -52,3 +52,7 @@ h3.square {
 .game-info {
     margin-left: 20px;
 }
+
+.selected {
+    border: 1px solid red;
+}
