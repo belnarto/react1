@@ -40,33 +40,30 @@ class Board extends React.Component {
     }
 
     render() {
+        let buffer = [];
+
+        buffer.push(<div className="board-row">
+            <h3 className="square">#</h3>
+            <h3 className="square">0</h3>
+            <h3 className="square">1</h3>
+            <h3 className="square">2</h3>
+        </div>);
+
+        for (let i = 0; i < 3; i++) {
+            buffer.push(<div className="board-row">
+                <h3 className="square">{i}</h3>
+                {this.renderSquare(new Coords(i, 0))}
+                {this.renderSquare(new Coords(i, 1))}
+                {this.renderSquare(new Coords(i, 2))}
+            </div>);
+        }
+
         return (
-            <div>
-                <div className="board-row">
-                    <h3 className="square">#</h3>
-                    <h3 className="square">0</h3>
-                    <h3 className="square">1</h3>
-                    <h3 className="square">2</h3>
+            <>
+                <div>
+                    {buffer}
                 </div>
-                <div className="board-row">
-                    <h3 className="square">0</h3>
-                    {this.renderSquare(new Coords(0, 0))}
-                    {this.renderSquare(new Coords(0, 1))}
-                    {this.renderSquare(new Coords(0, 2))}
-                </div>
-                <div className="board-row">
-                    <h3 className="square">1</h3>
-                    {this.renderSquare(new Coords(1, 0))}
-                    {this.renderSquare(new Coords(1, 1))}
-                    {this.renderSquare(new Coords(1, 2))}
-                </div>
-                <div className="board-row">
-                    <h3 className="square">2</h3>
-                    {this.renderSquare(new Coords(2, 0))}
-                    {this.renderSquare(new Coords(2, 1))}
-                    {this.renderSquare(new Coords(2, 2))}
-                </div>
-            </div>
+            </>
         );
     }
 }
