@@ -45,6 +45,10 @@ h3.square {
     outline: none;
 }
 
+.win-square {
+    background: darkseagreen;
+}
+
 .kbd-navigation .square:focus {
     background: #ddd;
 }

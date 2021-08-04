@@ -3,11 +3,20 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 function Square(props) {
-    return (
-        <button className="square" onClick={props.onClick}>
-            {props.value}
-        </button>
-    );
+    if (props.winSquare) {
+        return (
+            <button className="square win-square" onClick={props.onClick}>
+                {props.value}
+            </button>
+        );
+    } else {
+        return (
+            <button className="square" onClick={props.onClick}>
+                {props.value}
+            </button>
+        );
+    }
+
 }
 
 function toArrayIndex(coords) {
@@ -31,12 +40,23 @@ Coords.prototype.toString = function coordsToString() {
 
 class Board extends React.Component {
     renderSquare(coords) {
-        return (
-            <Square
-                value={this.props.squaresMap.get(coords.toString())}
-                onClick={() => this.props.onClick(toArrayIndex(coords))}
-            />
-        );
+        if (this.props.winLine !== null && this.props.winLine.includes(coords.toString())) {
+            return (
+                <Square
+                    value={this.props.squaresMap.get(coords.toString())}
+                    winSquare={true}
+                    onClick={() => this.props.onClick(toArrayIndex(coords))}
+                />
+            );
+        } else {
+            return (
+                <Square
+                    value={this.props.squaresMap.get(coords.toString())}
+                    winSquare={false}
+                    onClick={() => this.props.onClick(toArrayIndex(coords))}
+                />
+            );
+        }
     }
 
     render() {
@@ -77,7 +97,7 @@ class Game extends React.Component {
             ],
             stepNumber: 0,
             xIsNext: true,
-            sortingAsc: true,
+            sortingAsc: false,
         };
     }
 
@@ -85,7 +105,7 @@ class Game extends React.Component {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squaresMap = new Map(current);
-        if (calculateWinner(squaresMap) || squaresMap.get(toCoords(i).toString()) != null) {
+        if (calculateWinLine(squaresMap) || squaresMap.get(toCoords(i).toString()) != null) {
             return;
         }
         squaresMap.set(toCoords(i).toString(), this.state.xIsNext ? "X" : "O");
@@ -108,8 +128,10 @@ class Game extends React.Component {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
         const squaresMap = new Map(current);
-        const winner = calculateWinner(squaresMap);
-
+        const winLine = calculateWinLine(squaresMap);
+        const winner = winLine !== null
+            ? (this.state.xIsNext ? "O" : "X")
+            : null;
         const moves = history.map((step, move) => {
             const desc = move ?
                 'Go to move #' + move + ' ' + Array.from(step.keys()).pop() :
@@ -145,6 +167,7 @@ class Game extends React.Component {
                 <div className="game-board">
                     <Board
                         squaresMap={squaresMap}
+                        winLine={winLine}
                         onClick={i => this.handleClick(i)}
                     />
                 </div>
@@ -166,7 +189,7 @@ class Game extends React.Component {
 
 ReactDOM.render(<Game/>, document.getElementById("root"));
 
-function calculateWinner(squaresMap) {
+function calculateWinLine(squaresMap) {
     const lines = [
         [toCoords(0), toCoords(1), toCoords(2)],
         [toCoords(3), toCoords(4), toCoords(5)],
@@ -182,7 +205,7 @@ function calculateWinner(squaresMap) {
         if (squaresMap.get(a.toString()) &&
             squaresMap.get(a.toString()) === squaresMap.get(b.toString()) &&
             squaresMap.get(a.toString()) === squaresMap.get(c.toString())) {
-            return squaresMap.get(a.toString());
+            return [a.toString(), b.toString(), c.toString()];
         }
     }
     return null;
